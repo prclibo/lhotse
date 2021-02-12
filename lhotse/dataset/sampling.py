@@ -162,6 +162,7 @@ class SingleCutSampler(CutSampler):
         # required to do this operation.
         num_frames = 0
         cut_ids = []
+        next_max_len, max_len = 0, 0
         while True:
             # Check that we have not reached the end of the dataset.
             if self.current_idx < len(self.data_source):
@@ -177,6 +178,8 @@ class SingleCutSampler(CutSampler):
             next_cut = self.cuts[next_cut_id]
             next_num_frames = num_frames + next_cut.num_frames
             next_num_cuts = len(cut_ids) + 1
+            next_max_len = max(next_max_len, next_cut.num_frames)
+            next_num_frames = next_num_cuts * next_max_len
             # Did we exceed the max_frames and max_cuts constraints?
             if next_num_frames <= self.max_frames and (self.max_cuts is None or next_num_cuts <= self.max_cuts):
                 # No - add the next cut to the batch, and keep trying.
